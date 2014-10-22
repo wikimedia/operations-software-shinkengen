@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name="shinkengen",
@@ -8,7 +8,7 @@ setup(
     description=("A shinken config generator for Wikimedia Labs"),
     license="Apache2",
     url="https://gerrit.wikimedia.org/r/#/admin/projects/operations/software/shinkengen",
-    packages=['shingen'],
+    packages=find_packages(),
     scripts=['scripts/shingen'],
     install_requires=[
         'jinja2',
