@@ -1,8 +1,9 @@
+#!/usr/bin/python3
 import os
 import yaml
-from .generators.generator import GeneratorRunner
-from .generators.hostgroups import generate_hostgroups_config
-from .generators.hosts import generate_host_config
+from shingen.generators.generator import GeneratorRunner
+from shingen.generators.hostgroups import generate_hostgroups_config
+from shingen.generators.hosts import generate_host_config
 
 default_config = {
     'projects': ['tools'],

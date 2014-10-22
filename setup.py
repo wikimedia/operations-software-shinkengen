@@ -9,6 +9,7 @@ setup(
     license="Apache2",
     url="https://gerrit.wikimedia.org/r/#/admin/projects/operations/software/shinkengen",
     packages=['shingen'],
+    scripts=['scripts/shingen'],
     install_requires=[
         'jinja2',
         'pyyaml',
