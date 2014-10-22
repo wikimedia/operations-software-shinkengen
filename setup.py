@@ -7,7 +7,7 @@ setup(
     author_email="yuvipanda@gmail.com",
     description=("A shinken config generator for Wikimedia Labs"),
     license="Apache2",
-    url="https://github.com/halfak/MediaWiki-OAuth",
+    url="https://gerrit.wikimedia.org/r/#/admin/projects/operations/software/shinkengen",
     packages=['shingen'],
     install_requires=[
         'jinja2',
