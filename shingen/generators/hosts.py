@@ -8,4 +8,5 @@ def generate_host_config(config, project_name, instance):
     projects = [project_name, config.get('default-hostgroup', 'labshost')]
     co.properties['hostgroups'] = ','.join(projects)
     co.properties['contact_groups'] = project_name
+    co.properties['notes'] = project_name # Used for auto deriving graphite path
     return co
