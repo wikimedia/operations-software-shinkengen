@@ -28,7 +28,7 @@ class GeneratorRunner():
             config_objects = []
             for instance in instances:
                 for generator in self.instance_generators:
-                    co = generator(project, instance)
+                    co = generator(self.config, project, instance)
                     config_objects.append(co)
             hosts_config_path = '%s/%s.cfg' % (
                 self.config['base_path'], project
@@ -37,7 +37,7 @@ class GeneratorRunner():
 
             project_cos = []
             for generator in self.project_generators:
-                co = generator(project, instances, config_objects)
+                co = generator(self.config, project, instances, config_objects)
                 project_cos.append(co)
             projects_config_path = '%s/project-%s.cfg' % (
                 self.config['base_path'], project
