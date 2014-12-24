@@ -6,43 +6,34 @@ Generator script that generates hosts and service configuration.
 3. Runs the instance info through a series of functions, which generate
    config objects for shinken
 """
-from ..wikitech import Wikitech
+from ..ldapsource import LDAPSource
 
 
 class GeneratorRunner():
-    def __init__(self, config):
+    def __init__(self, config, instances_generator=None, hostgroups_generator=None):
         self.config = config
-        self.instance_generators = []
-        self.project_generators = []
-
-    def register_instance_generator(self, func):
-        self.instance_generators.append(func)
-
-    def register_project_generator(self, func):
-        self.project_generators.append(func)
+        self.instance_generator = instances_generator
+        self.hostgroups_generator = hostgroups_generator
 
     def generate(self):
-        wikitech = Wikitech()
+        ldapsource = LDAPSource(self.config['ldap']['server'],
+                                self.config['ldap']['bindas'],
+                                self.config['ldap']['password'])
+        all_host_configs = []
         for project in self.config['projects']:
-            instances = wikitech.fetch_instances(project, 'eqiad')
-            config_objects = []
+            instances = ldapsource.get_hostsinfo(project)
+            host_configs = []
             for instance in instances:
-                for generator in self.instance_generators:
-                    co = generator(self.config, project, instance)
-                    config_objects.append(co)
+                hostconfig = self.instance_generator(self.config, project, instance)
+                host_configs.append(hostconfig)
             hosts_config_path = '%s/%s.cfg' % (
                 self.config['base_path'], project
             )
-            open(hosts_config_path, 'w').write('\n'.join([str(co) for co in config_objects]))
+            with open(hosts_config_path, 'w') as hostsfile:
+                hostsfile.write('\n'.join([str(co) for co in host_configs]))
+            all_host_configs += host_configs
 
-            project_cos = []
-            for generator in self.project_generators:
-                co = generator(self.config, project, instances, config_objects)
-                project_cos.append(co)
-            projects_config_path = '%s/project-%s.cfg' % (
-                self.config['base_path'], project
-            )
-            open(projects_config_path, 'w').write('\n'.join([str(co) for co in project_cos]))
-
-
-
+        hostgroup_configs = self.hostgroups_generator(all_host_configs)
+        hostgroups_config_path = '%s/hostgroups.cfg' % self.config['base_path']
+        with open(hostgroups_config_path, 'w') as hostgroupsfile:
+            hostgroupsfile.write('\n'.join([str(co) for co in hostgroup_configs]))
