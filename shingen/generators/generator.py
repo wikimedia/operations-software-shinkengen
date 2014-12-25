@@ -2,9 +2,8 @@
 Generator script that generates hosts and service configuration.
 
 1. Checks config to figure out which projects to monitor
-2. Fetches instance information from wikitech
-3. Runs the instance info through a series of functions, which generate
-   config objects for shinken
+2. Fetches instance information from ldap
+3. Generates hosts info and hostgroups info for the instances
 """
 from ..ldapsource import LDAPSource
 
