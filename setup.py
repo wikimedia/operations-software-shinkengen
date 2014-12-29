@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="shinkengen",
-    version='0.2',
+    version='0.3',
     author="Yuvi Panda",
     author_email="yuvipanda@gmail.com",
     description=("A shinken config generator for Wikimedia Labs"),

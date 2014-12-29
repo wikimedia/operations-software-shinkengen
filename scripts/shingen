@@ -1,17 +1,30 @@
 #!/usr/bin/python3
 import os
 import yaml
-from shingen.generators.generator import GeneratorRunner
-from shingen.generators.hostgroups import generate_hostgroups_config
-from shingen.generators.hosts import generate_host_config
 
-default_config = {
-    'projects': ['tools'],
-    'base_path': '.'
-}
-if os.path.exists('/etc/shinkengen.yaml'):
-    config = yaml.load(open('/etc/shinkengen.yaml'))
-else:
-    config = default_config
-gr = GeneratorRunner(config, generate_host_config, generate_hostgroups_config)
-gr.generate()
+from shingen.ldapsource import LDAPSource
+from shingen.shinkenconfig import ConfigObject
+
+config = yaml.load(open('/etc/shinkengen.yaml'))
+
+ldapsource = LDAPSource(config['ldap']['server'],
+                        config['ldap']['bindas'],
+                        config['ldap']['password'])
+
+for project in config['projects']:
+    instances = ldapsource.get_hostsinfo(project)
+    host_configs = []
+    for instance in instances:
+        co = ConfigObject('host')
+        co.properties['use'] = 'generic-host'
+        co.properties['host_name'] = instance['name']
+        co.properties['address'] = instance['ip']
+        co.properties['hostgroups'] = ','.join([project] + instance['puppetClasses'])
+        co.properties['contact_groups'] = project
+        co.properties['notes'] = project  # Used for auto deriving graphite path
+        host_configs.append(co)
+    hosts_config_path = '%s/%s.cfg' % (
+        config['base_path'], project
+    )
+    with open(hosts_config_path, 'w') as hostsfile:
+        hostsfile.write('\n'.join([str(co) for co in host_configs]))
